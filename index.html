@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giám sát máy CNC</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="icons.css">
+    <link rel="icon" href="laser.png" type="image/png">
+</head>
+<body>
+    <div id="password-form" class="password-form centered">
+        <h2>Nhập mật khẩu</h2>
+        <input type="password" id="password-input" placeholder="Mật khẩu">
+        <button onclick="checkPassword()">Xác nhận</button>
+    </div>
+    <div id="content" style="display:none;">
+        <h1>GIÁM SÁT HỆ THỐNG MÁY CNC NHÀ MÁY KHUÔN</h1>
+        <p>Layout nhà máy Khuôn</p>
+        <div class="image-container" style="position: relative; display: inline-block; overflow: hidden; max-width: 100%; max-height: 80vh;">
+            <img src="khuon_1.jpg" alt="Layout Khuôn" loading="lazy" style="width: 100%; height: auto;">
+            <div id="tooltip" class="tooltip"></div>
+        </div>
+        <div id="tooltip-above" class="tooltip-above"></div> <!-- Added tooltip above the image -->
+        <div class="loading-container" style="display: flex; align-items: center;">
+            <div class="control-buttons" style="margin-right: 10px;">
+                <button id="toggle-button" onclick="togglePolling()"><img src="stop-button.png" alt="Dừng" style="width: 20px; height: 20px;"></button>
+            </div>
+            <div id="loading-indicator" class="loading-indicator" style="white-space: nowrap;">Đang tải dữ liệu...</div>
+            <div class="progress-bar" style="flex-grow: 1; margin-left: 10px;">
+                <div id="progress-bar-fill" class="progress-bar-fill">0%</div>
+            </div>
+        </div>
+        <h2>Danh sách máy CNC:</h2>
+        <div id="machine-stats" class="info-container">
+            <span class="info-title">Tổng số máy:</span><div id="total-machines" class="info-box"></div>
+            <span class="info-title">Đang hoạt động:</span><div id="active-machines" class="info-box green"></div>
+            <span class="info-title">Không hoạt động:</span><div id="inactive-machines" class="info-box yellow"></div>
+            <span class="info-title">Cảnh báo:</span><div id="alert-machines" class="info-box red"></div>
+            <span class="info-title">Đã tắt</span><div id="shutdown-machines" class="info-box blue"></div>
+        </div>
+        <table id="file-table">
+            <thead>
+                <tr>
+                    <th>Địa chỉ IP</th>
+                    <th>Trạng thái</th>
+                    <!-- Hide these columns -->
+                    <th>Vị trí truyệt đối (x, y, z)</th>
+                    <th>Vị trí tương đối (x, y, z)</th>
+                    <!-- Hide these columns -->
+                    <!-- <th style="display:none;">Vị trí truyệt đối (x, y, z)</th>
+                    <th style="display:none;">Vị trí tương đối (x, y, z)</th> -->
+                    <th>Thời gian chạy</th>
+                    <th>Thời gian dừng</th>
+                    <th>Thời gian cảnh báo</th>
+                    <th>Thời gian tắt</th>
+                    <th>Tổng thời gian chạy</th>
+                    <th>Tổng thời gian dừng</th>
+                    <th>Tổng thời gian cảnh báo</th>
+                    <th>Tổng thời gian tắt</th>
+                </tr>
+            </thead>
+            <tbody id="file-list"></tbody>
+        </table>
+    </div>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script src="script.js"></script>
+    <script src="ip_coordinates.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            showPasswordForm();
+            handleClientLoad();
+        });
+
+        document.querySelectorAll('.icon').forEach(function(icon) {
+            icon.addEventListener('mouseover', function(event) {
+                var ip = this.getAttribute('data-ip');
+                var status = this.getAttribute('data-status');
+                var tooltip = document.getElementById('tooltip');
+                var tooltipAbove = document.getElementById('tooltip-above');
+                tooltip.innerHTML = `IP: ${ip}<br>Status: ${status}`;
+                tooltipAbove.innerHTML = `IP: ${ip}<br>X: ${event.clientX}, Y: ${event.clientY}`;
+                tooltip.style.display = 'block';
+                tooltipAbove.style.display = 'block';
+                tooltip.style.left = `${Math.min(event.pageX + 5, window.innerWidth - tooltip.offsetWidth - 5)}px`;
+                tooltip.style.top = `${Math.min(event.pageY + 5, window.innerHeight - tooltip.offsetHeight - 5)}px`;
+                tooltipAbove.style.left = `${Math.min(event.pageX + 5, window.innerWidth - tooltipAbove.offsetWidth - 5)}px`;
+                tooltipAbove.style.top = `${Math.min(event.pageY - 30, window.innerHeight - tooltipAbove.offsetHeight - 5)}px`; // Display above the cursor
+                tooltip.style.color = 'white'; // Ensure text color is white
+                tooltipAbove.style.color = 'white'; // Ensure text color is white
+            });
+            icon.addEventListener('mouseout', function() {
+                var tooltip = document.getElementById('tooltip');
+                var tooltipAbove = document.getElementById('tooltip-above');
+                tooltip.style.display = 'none';
+                tooltipAbove.style.display = 'none';
+            });
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const img = document.querySelector('.image-container img');
+                if (img.style.position === 'fixed') {
+                    img.style.position = 'static';
+                    img.style.width = '100%';
+                    img.style.height = 'auto';
+                    img.style.zIndex = '1';
+                }
+            }
+        });
+
+        document.querySelector('.image-container img').addEventListener('mousedown', function(event) {
+            const img = this;
+            const startY = event.clientY;
+            function onMouseMove(event) {
+                if (event.clientY > startY + 50) { // Drag down by 50px to exit full screen
+                    img.style.position = 'static';
+                    img.style.width = '100%';
+                    img.style.height = 'auto';
+                    img.style.zIndex = '1';
+                    document.removeEventListener('mousemove', onMouseMove);
+                }
+            }
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', function() {
+                document.removeEventListener('mousemove', onMouseMove);
+            }, { once: true });
+        });
+    </script>
+</body>
+</html>

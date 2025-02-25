@@ -1,0 +1,213 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    text-align: center;
+    padding: 50px;
+}
+
+h1 {
+    color: #333;
+}
+
+button {
+    background-color: #e8eeee;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #ffffff;
+}
+
+.centered {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgb(181, 178, 178);
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+#password-input {
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 12px; /* Reduce font size */
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #cac9c9;
+    color: rgb(0, 0, 0);
+}
+
+td {
+    background-color: #ffffff;
+}
+
+.loading-indicator {
+    display: none;
+    font-size: 16px;
+    color: #333;
+    margin-top: 20px;
+    height: 20px; /* Fixed height to prevent jumping */
+}
+
+.progress-bar {
+    width: 100%;
+    background-color: #f3f3f3;
+    border: 1px solid #ddd;
+    margin-top: 10px;
+    height: 20px; /* Fixed height to prevent jumping */
+}
+
+.progress-bar-fill {
+    height: 20px;
+    width: 0;
+    background-color: #4CAF50;
+    text-align: center;
+    color: white;
+    line-height: 20px;
+}
+
+.loading-container {
+    height: 60px; /* Fixed height to include both loading indicator and progress bar */
+    margin-bottom: 20px; /* Space between loading container and table */
+}
+
+.info-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+}
+
+.info-title {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.info-box {
+    display: inline-block;
+    padding: 5px 10px;
+    margin-right: 10px;
+    margin-left: 5px; /* Add margin to the left for spacing */
+    border-radius: 5px;
+    background-color: #e0e0e0;
+    min-width: 100px; /* Ensure minimum width for better spacing */
+    text-align: center; /* Center text */
+}
+
+.info-box.green {
+    background-color: #7ad47d;
+    color: rgb(0, 0, 0);
+}
+
+.info-box.yellow {
+    background-color: #f5e55c;
+    color: black;
+}
+
+.info-box.red {
+    background-color: #f7766d;
+    color: rgb(0, 0, 0);
+}
+
+.info-box.blue {
+    background-color: #abb1b4;
+    color: rgb(0, 0, 0);
+}
+
+.password-form {
+    background-color: #e3e3e3;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.password-form h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.password-form input[type="password"] {
+    padding: 10px;
+    margin-bottom: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid #cfcdcd;
+    border-radius: 5px;
+}
+
+.password-form button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.password-form button:hover {
+    background-color: #45a049;
+}
+
+.tooltip {
+    position: absolute;
+    background-color: #333;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+    display: none;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.tooltip-above {
+    position: absolute;
+    background-color: #333;
+    color: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 12px;
+    display: none;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+.image-container {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    max-width: 100%;
+    max-height: 80vh;
+}
+
+.image-container img {
+    transition: transform 0.25s ease;
+    width: 100%;
+    height: auto;
+}
+
+/* Remove zoom functionality */
+.image-container:hover img {
+    transform: none;
+}
